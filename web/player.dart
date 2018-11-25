@@ -1,14 +1,15 @@
-import 'dart:math';
-
 import 'const.dart';
 
 import 'piece.dart';
 
 class Player {
+  double _velocity;
+
   double _x = canvasWidth / 2;
-  double _y = canvasHeight - 40.0;
-  double _size = 20;
-  double _velocity = 200.0;
+  double _y = canvasHeight - playerSize;
+  double _size = playerSize;
+
+  Player(this._velocity);
 
   double getX() => _x;
   double getY() => _y;
@@ -32,7 +33,7 @@ class Player {
   void render(ctx) {
     ctx..beginPath()
       ..fillStyle = 'black'
-      ..arc(_x, _y, _size, 0, pi * 2)
+      ..rect(_x, _y, _size, _size)
       ..fill();
   }
 
@@ -50,16 +51,22 @@ class Player {
       && _y < py + height
       && _y + _size > py) {
 
-        result = true;
+      result = true;
 
+      _scaleSize(p.getColor());
     }
 
     return result;
   }
 
-  void shrink() => _size -= 1;
+  void _scaleSize(color) {
+    if (color == 'black') playerSize += 0.1;
+    else playerSize -= 0.1;
+  }
 
-  void grow() {
+  void shrink(remove) => _size -= remove / 3;
+
+  void grow(remove) {
     if (_size < playerSize) _size += 1;
   }
 

@@ -1,40 +1,42 @@
 import 'dart:html';
-import 'dart:math';
 
 import 'const.dart';
 
 import 'keyboard.dart';
 import 'piece.dart';
 import 'player.dart';
+import 'level.dart';
 
 class Game {
   final CanvasElement _canvas;
   final Keyboard _keyboard = Keyboard();
 
-  int _lastTimestamp = 0;
-  Player _player = Player();
+  Level _level = Level();
+
+  Player _player;
   List<Piece> _pieces = [];
+
+  int _lastTimestamp = 0;
   int _lastPieceCreationTime = null;
   bool _dead = false;
-  int _min = 400;
-  int _max = 800;
 
-  Game(this._canvas);
-
+  Game(this._canvas) {
+    _player = Player(_level.getPlayerVelocity());
+  }
 
   run() {
     window.requestAnimationFrame(_gameLoop);
 
     _addPiece();
+    _level.updateLevel();
   }
 
   void _addPiece() {
-    _pieces.add(Piece());
+    _pieces.add(Piece(_level.getPieceVelocity()));
     _lastPieceCreationTime = DateTime.now().millisecondsSinceEpoch;
 
-    if (_min > 0) _min--;
-    if(_max > _min + 5) _max -= 5;
-
+    _level.updateSpawn();
+    _level.updateLevel();
   }
 
   void _updatePiece(Piece piece, double elapsed) {
@@ -42,11 +44,15 @@ class Game {
   }
 
   void _gameLoop(final double) {
+    if (_dead == true) return;
+
     _update(_getElapsed());
 
     _isDead();
 
     _render();
+
+    _level.updateDifficulty();
 
     window.requestAnimationFrame(_gameLoop);
   }
@@ -66,8 +72,6 @@ class Game {
     if (_player.getSize() <= 0) _dead = true;
   }
 
-  int _randomSpan(int min, int max) => min + Random().nextInt(max - min);
-
   void _update(final double elapsed) {
     if (_keyboard.isPressed(KeyCode.LEFT)) _player.updateX(-elapsed);
 
@@ -77,9 +81,9 @@ class Game {
 
     if (_keyboard.isPressed(KeyCode.DOWN)) _player.updateY(elapsed);
 
-    if ((DateTime.now().millisecondsSinceEpoch - _lastPieceCreationTime) > _randomSpan(_min, _max)) {
+    if ((DateTime.now().millisecondsSinceEpoch - _lastPieceCreationTime) > randomMinMax(_level.getMinSpawn(), _level.getMaxSpawn())) {
       _addPiece();
-      _player.grow();
+      _player.grow(_level.getDifficulty());
     }
 
     _pieces.forEach((p) => _updatePiece(p, elapsed));
@@ -87,7 +91,7 @@ class Game {
 
     _pieces.forEach((p) {
       if (_player.isHit(p)) {
-        _player.shrink();
+        _player.shrink(_level.getDifficulty());
       }
     });
 
