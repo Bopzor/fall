@@ -31,7 +31,8 @@ class Piece {
   String getColor() => _color;
 
   void render(ctx) {
-    ctx..beginPath()
+    ctx..globalAlpha = 0.8
+      ..beginPath()
       ..fillStyle = _color
       ..rect(_x, (_y - _height), _width, _height)
       ..fill();

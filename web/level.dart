@@ -10,7 +10,7 @@ class Level {
   double _pieceVelocity = 350.0;
 
   double _difficulty = da;
-  double _level = lb;
+  double _level = lc;
 
   int getMinSpawn() => _minSpawn;
   int getMaxSpawn() => _maxSpawn;
@@ -26,7 +26,7 @@ class Level {
   }
 
   void updatePieceVelociy() {
-    if (_pieceVelocity < 1000) _pieceVelocity = _pieceVelocity += _difficulty ;
+    if (_pieceVelocity < 1000) _pieceVelocity += _difficulty ;
   }
 
   void updateLevel() => _level += 0.1;

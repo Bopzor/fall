@@ -5,14 +5,14 @@ const int canvasHeight = 800;
 double playerSize = 40;
 
 const double da = 0.3;
-const double db = 0.5;
-const double dc = 0.8;
-const double dd = 1.0;
+const double db = 0.3;
+const double dc = 0.9;
+const double dd = 1.1;
 
-const double la = 1.0;
-const double lb = 4.0;
-const double lc = 10.0;
-const double ld = 20.0;
+const double la = 2.0;
+const double lb = 6.0;
+const double lc = 12.0;
+const double ld = 30.0;
 
 String getRandomColor() {
   List<String> color = [
