@@ -1,6 +1,6 @@
 import 'dart:html';
 
-import 'piece.dart';
+import 'planet.dart';
 
 class Bullet {
   double _x;
@@ -30,7 +30,7 @@ class Bullet {
     if (_y < 0) display = true;
   }
 
-  bool isHit(Piece p) {
+  bool isHit(Planet p) {
     double px = p.x;
     double py = p.y;
     int height = p.height;

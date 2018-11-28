@@ -2,7 +2,7 @@ import 'dart:html';
 
 import 'const.dart';
 
-class Piece {
+class Planet {
   final ImageElement image = ImageElement();
 
   double _velocity;
@@ -19,7 +19,7 @@ class Piece {
 
   bool _display = true;
 
-  Piece(this._velocity) {
+  Planet(this._velocity) {
     _x = randomMinMax(0, canvasWidth - _size) / 1;
     _y = -_size / 1;
     _life = (_size + _size) ~/ 40;

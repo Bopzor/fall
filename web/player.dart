@@ -2,7 +2,7 @@ import 'dart:html';
 
 import 'const.dart';
 
-import 'piece.dart';
+import 'planet.dart';
 
 class Player {
   double _velocity;
@@ -44,7 +44,7 @@ class Player {
     ctx.drawImageScaled(image, _x, _y, _width, _height);
   }
 
-  bool isHit(Piece p) {
+  bool isHit(Planet p) {
     double px = p.x;
     double py = p.y;
     int height = p.height;

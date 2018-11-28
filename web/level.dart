@@ -7,7 +7,7 @@ class Level {
   int _maxSpawn = 800;
 
   double _playerVelocity = 200.0;
-  double _pieceVelocity = 350.0;
+  double _planetVelocity = 350.0;
 
   double _difficulty = da;
   double _level = la;
@@ -16,7 +16,7 @@ class Level {
   int get maxSpawn => _maxSpawn;
 
   double get playerVelocity => _playerVelocity;
-  double get pieceVelocity => _pieceVelocity;
+  double get planetVelocity => _planetVelocity;
 
   double get difficulty => _difficulty;
 
@@ -25,8 +25,8 @@ class Level {
     if (_maxSpawn > _difficulty + _minSpawn)_maxSpawn -= _difficulty ~/ 1;
   }
 
-  void updatePieceVelociy() {
-    if (_pieceVelocity < 1000) _pieceVelocity += _difficulty ;
+  void updatePlanetVelociy() {
+    if (_planetVelocity < 1000) _planetVelocity += _difficulty ;
   }
 
   void updateLevel() => _level += 0.1;

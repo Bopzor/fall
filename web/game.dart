@@ -3,7 +3,7 @@ import 'dart:html';
 import 'const.dart';
 
 import 'keyboard.dart';
-import 'piece.dart';
+import 'planet.dart';
 import 'player.dart';
 import 'level.dart';
 import 'bullet.dart';
@@ -19,7 +19,7 @@ class Game {
   num _score = 0;
 
   Player _player;
-  List<Piece> _pieces = [];
+  List<Planet> planet = [];
   List<Bullet> _bullets =[];
 
   int _lastTimestamp = 0;
@@ -39,7 +39,7 @@ class Game {
   }
 
   void _addPiece() {
-    _pieces.add(Piece(_level.pieceVelocity));
+    planet.add(Planet(_level.planetVelocity));
     _lastPieceCreationTime = DateTime.now().millisecondsSinceEpoch;
 
     _level.updateSpawn();
@@ -93,7 +93,7 @@ class Game {
       _player.grow(_level.difficulty);
     }
 
-    _pieces.forEach((p) {
+    planet.forEach((p) {
       _bullets.forEach((b) {
         b.update(elapsed);
 
@@ -115,7 +115,7 @@ class Game {
 
     });
 
-    _pieces.removeWhere((p) => !p.display);
+    planet.removeWhere((p) => !p.display);
     _bullets.removeWhere((b) => !b.display);
   }
 
@@ -142,7 +142,7 @@ class Game {
     if (!_dead) {
       _player.render(ctx);
       _bullets.forEach((b) => b.render(ctx));
-      _pieces.forEach((p) => p.render(ctx));
+      planet.forEach((p) => p.render(ctx));
 
     } else {
       _renderEnd(ctx);
