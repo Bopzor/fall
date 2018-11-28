@@ -10,15 +10,15 @@ class Level {
   double _pieceVelocity = 350.0;
 
   double _difficulty = da;
-  double _level = lc;
+  double _level = la;
 
-  int getMinSpawn() => _minSpawn;
-  int getMaxSpawn() => _maxSpawn;
+  int get minSpawn => _minSpawn;
+  int get maxSpawn => _maxSpawn;
 
-  double getPlayerVelocity() => _playerVelocity;
-  double getPieceVelocity() => _pieceVelocity;
+  double get playerVelocity => _playerVelocity;
+  double get pieceVelocity => _pieceVelocity;
 
-  double getDifficulty() => _difficulty;
+  double get difficulty => _difficulty;
 
   void updateSpawn() {
     if (_minSpawn > 100) _minSpawn -= _difficulty ~/ 1;

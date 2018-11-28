@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'const.dart';
 
 import 'piece.dart';
@@ -6,68 +8,82 @@ class Player {
   double _velocity;
 
   double _x = canvasWidth / 2;
-  double _y = canvasHeight - playerSize;
-  double _size = playerSize;
+  double _y;
 
-  Player(this._velocity);
+  double _width = playerWidth;
+  double _height;
 
-  double getX() => _x;
-  double getY() => _y;
-  double getSize() => _size;
+  final ImageElement image = ImageElement(src: './assets/player.png');
+
+  Player(this._velocity) {
+    _height = _width / 0.55;
+    _y = canvasHeight - _height;
+  }
+
+  double get x => _x;
+  double get y => _y;
+  double get width => _width;
+  double get height => _height;
 
   void updateX(double elapsed) {
     _x += _velocity * elapsed;
 
     if (_x < 0) _x = 0;
-    if (_x > canvasWidth - _size) _x = canvasWidth - _size;
+    if (_x > canvasWidth - _width) _x = canvasWidth - _width;
   }
 
   void updateY(double elapsed) {
     _y += _velocity * elapsed;
 
     if (_y < 0) _y = 0;
-    if (_y > canvasHeight - _size) _y = canvasHeight - _size;
+    if (_y > canvasHeight - _height) _y = canvasHeight - _height;
 
   }
 
   void render(ctx) {
-    ctx..beginPath()
-      ..fillStyle = 'black'
-      ..rect(_x, _y, _size, _size)
-      ..fill();
+    ctx.drawImageScaled(image, _x, _y, _width, _height);
   }
 
   bool isHit(Piece p) {
-    double px = p.getX();
-    double py = p.getY();
-    int height = p.getHeight();
-    int width = p.getWidth();
+    double px = p.x;
+    double py = p.y;
+    int height = p.height;
+    int width = p.width;
 
     bool result = false;
 
     if (
-      _x < px + width
-      && _x + _size  > px
-      && _y < py + height
-      && _y + _size > py) {
+      _x < px + width &&
+      _x + _width  > px &&
+      _y < py + height &&
+      _y + _height > py
+    ) {
 
       result = true;
 
-      _scaleSize(p.getColor());
+      _scaleSize(p.color);
     }
 
     return result;
   }
 
   void _scaleSize(color) {
-    if (color == 'black') playerSize += 0.1;
-    else playerSize -= 0.1;
+    if (color == 'black') playerWidth += 0.1;
+    else playerWidth -= 0.1;
+
+    playerHeight = playerWidth / 0.55;
   }
 
-  void shrink(remove) => _size -= remove / 3;
+  void shrink(remove) {
+    _width -= remove / 3;
+    _height = _width / 0.55;
+  }
 
   void grow(remove) {
-    if (_size < playerSize) _size += 1;
+    if (_width < playerWidth) {
+      _width += 1;
+      _height = _width / 0.55;
+    }
   }
 
 }

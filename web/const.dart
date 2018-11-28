@@ -2,7 +2,8 @@ import 'dart:math';
 
 const int canvasWidth = 500;
 const int canvasHeight = 800;
-double playerSize = 40;
+double playerHeight = 120;
+double playerWidth = 70;
 
 const double da = 0.3;
 const double db = 0.3;
@@ -14,42 +15,42 @@ const double lb = 6.0;
 const double lc = 12.0;
 const double ld = 30.0;
 
-String getRandomColor() {
-  List<String> color = [
-    'red',
-    'cyan',
-    'orange',
-    'magenta',
-    'green',
-    'yellow',
-    'whitesmoke',
-    'red',
-    'cyan',
-    'orange',
-    'magenta',
-    'green',
-    'yellow',
-    'whitesmoke',
-    'red',
-    'cyan',
-    'orange',
-    'magenta',
-    'green',
-    'yellow',
-    'whitesmoke',
-    'red',
-    'cyan',
-    'orange',
-    'magenta',
-    'green',
-    'yellow',
-    'whitesmoke',
-    'black',
+String getRandomImage() {
+  List<String> src = [
+    './assets/red.png',
+    './assets/blue.png',
+    './assets/green.png',
+    './assets/yellow.png',
+    './assets/purple.png',
+    './assets/magenta.png',
+    './assets/orange.png',
+    './assets/red.png',
+    './assets/blue.png',
+    './assets/green.png',
+    './assets/yellow.png',
+    './assets/purple.png',
+    './assets/magenta.png',
+    './assets/orange.png',
+    './assets/red.png',
+    './assets/blue.png',
+    './assets/green.png',
+    './assets/yellow.png',
+    './assets/purple.png',
+    './assets/magenta.png',
+    './assets/orange.png',
+    './assets/red.png',
+    './assets/blue.png',
+    './assets/green.png',
+    './assets/yellow.png',
+    './assets/purple.png',
+    './assets/magenta.png',
+    './assets/orange.png',
+    './assets/hole.png',
   ];
 
-  int idx = Random().nextInt(color.length);
+  int idx = Random().nextInt(src.length);
 
-  return color[idx];
+  return src[idx];
 }
 
 int randomMinMax(int min, int max) => min + Random().nextInt(max - min);

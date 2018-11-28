@@ -6,22 +6,29 @@ import 'keyboard.dart';
 import 'piece.dart';
 import 'player.dart';
 import 'level.dart';
+import 'bullet.dart';
 
 class Game {
   final CanvasElement _canvas;
   final Keyboard _keyboard = Keyboard();
 
+  final ImageElement _image = ImageElement(src: './assets/background.png');
+
   Level _level = Level();
+
+  num _score = 0;
 
   Player _player;
   List<Piece> _pieces = [];
+  List<Bullet> _bullets =[];
 
   int _lastTimestamp = 0;
-  int _lastPieceCreationTime = null;
+  int _lastPieceCreationTime = 0;
+  int _lastFireBullet = DateTime.now().millisecondsSinceEpoch;
   bool _dead = false;
 
   Game(this._canvas) {
-    _player = Player(_level.getPlayerVelocity());
+    _player = Player(_level.playerVelocity);
   }
 
   run() {
@@ -32,19 +39,17 @@ class Game {
   }
 
   void _addPiece() {
-    _pieces.add(Piece(_level.getPieceVelocity()));
+    _pieces.add(Piece(_level.pieceVelocity));
     _lastPieceCreationTime = DateTime.now().millisecondsSinceEpoch;
 
     _level.updateSpawn();
     _level.updateLevel();
   }
 
-  void _updatePiece(Piece piece, double elapsed) {
-    piece.update(elapsed);
-  }
-
   void _gameLoop(final double) {
     if (_dead == true) return;
+
+    _score = _score + _level.difficulty * 10;
 
     _update(_getElapsed());
 
@@ -69,7 +74,7 @@ class Game {
   }
 
   void _isDead() {
-    if (_player.getSize() <= 0) _dead = true;
+    if (_player.width <= 0) _dead = true;
   }
 
   void _update(final double elapsed) {
@@ -81,37 +86,66 @@ class Game {
 
     if (_keyboard.isPressed(KeyCode.DOWN)) _player.updateY(elapsed);
 
-    if ((DateTime.now().millisecondsSinceEpoch - _lastPieceCreationTime) > randomMinMax(_level.getMinSpawn(), _level.getMaxSpawn())) {
+    if (_keyboard.isPressed(KeyCode.SPACE)) _fire();
+
+    if ((DateTime.now().millisecondsSinceEpoch - _lastPieceCreationTime) > randomMinMax(_level.minSpawn, _level.maxSpawn)) {
       _addPiece();
-      _player.grow(_level.getDifficulty());
+      _player.grow(_level.difficulty);
     }
 
-    _pieces.forEach((p) => _updatePiece(p, elapsed));
-    _pieces.removeWhere((p) => !p.display);
-
     _pieces.forEach((p) {
+      _bullets.forEach((b) {
+        b.update(elapsed);
+
+         if (b.isHit(p)) {
+           p.hit();
+          _score = _score - (2 * _level.difficulty) * 10;
+          }
+      });
+
       if (_player.isHit(p)) {
-        _player.shrink(_level.getDifficulty());
+        _player.shrink(_level.difficulty);
+
+        _score = _score - (2 * _level.difficulty) * 10;
+
+        if (_score < 0) _score = 0;
       }
+
+      p.update(elapsed);
+
     });
 
+    _pieces.removeWhere((p) => !p.display);
+    _bullets.removeWhere((b) => !b.display);
+  }
+
+  void _fire() {
+    final int time = DateTime.now().millisecondsSinceEpoch;
+    double elapsed = (time - _lastFireBullet) / 100;
+
+    if (elapsed > 2) {
+      _bullets.add(Bullet(_player.x, _player.y, _player.width));
+
+      _lastFireBullet = time;
+    }
   }
 
   void _render() {
     final CanvasRenderingContext2D ctx = _canvas.context2D;
 
     ctx..globalAlpha = 1
-      ..fillStyle = 'gray'
-      ..beginPath()
-      ..rect(0, 0, canvasWidth, canvasHeight)
-      ..fill();
+      ..drawImage(_image, 0, 0)
+      ..font = '20px Monospace'
+      ..fillStyle = 'white'
+      ..fillText(_score.toString(), canvasWidth - 40, 15);
 
-    if (_dead) {
-      _renderEnd(ctx);
+    if (!_dead) {
+      _player.render(ctx);
+      _bullets.forEach((b) => b.render(ctx));
+      _pieces.forEach((p) => p.render(ctx));
 
     } else {
-      _player.render(ctx);
-      _pieces.forEach((p) => p.render(ctx));
+      _renderEnd(ctx);
     }
 
   }
