@@ -7,10 +7,10 @@ class Level {
   int _maxSpawn = 800;
 
   double _playerVelocity = 200.0;
-  double _planetVelocity = 350.0;
+  double _planetVelocity = 300.0;
 
-  double _difficulty = da;
-  double _level = la;
+  double _difficulty = 0;
+  double _level = 0;
 
   int get minSpawn => _minSpawn;
   int get maxSpawn => _maxSpawn;
@@ -29,19 +29,24 @@ class Level {
     if (_planetVelocity < 1000) _planetVelocity += _difficulty ;
   }
 
-  void updateLevel() => _level += 0.1;
+  void updateLevel(double score) => _level = score / 1000;
 
   void updateDifficulty() {
     if (_level < lb) {
       // Intro Phase
       _difficulty = da + (db - da) * (_level - la);
-    }
-    else if(_level < lc) {
+
+    } else if(_level < lc) {
       // Learning Phase
       _difficulty = db + (dc - db) * (_level - lb);
+
     } else if(_level < ld) {
       // Progress Phase
       _difficulty = dc + (dd - dc) * (_level - lc);
-    }
+
+    } else {
+      // Kill-off phase
+      _difficulty = dd + gk * (_level - ld );
+}
   }
 }

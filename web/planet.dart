@@ -1,6 +1,7 @@
 import 'dart:html';
 
 import 'const.dart';
+import 'emitter.dart' hide Emitter;
 
 class Planet {
   final ImageElement image = ImageElement();
@@ -11,6 +12,7 @@ class Planet {
   double _y = 0;
 
   int _life;
+  int  _points;
   double _opacity = 1;
   double _lifeOffset;
 
@@ -20,6 +22,7 @@ class Planet {
   bool _display = true;
 
   Planet(this._velocity) {
+    _points = ((_size + _size) ~/ 40) * 10;
     _x = randomMinMax(0, canvasWidth - _size) / 1;
     _y = -_size / 1;
     _life = (_size + _size) ~/ 40;
@@ -33,7 +36,11 @@ class Planet {
     if (_y > canvasHeight + _size) _destroy();
   }
 
-  void _destroy() => _display = false;
+  void _destroy() {
+    _display = false;
+
+    emitter.emit('updateScore', _points);
+  }
 
   double get x => _x;
   double get y => _y;

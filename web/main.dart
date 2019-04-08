@@ -8,5 +8,4 @@ void main() {
 
   canvas.focus();
   scheduleMicrotask(Game(canvas).run);
-
 }

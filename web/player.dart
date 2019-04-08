@@ -1,5 +1,6 @@
 import 'dart:html';
 
+import 'emitter.dart' hide Emitter;
 import 'const.dart';
 
 import 'planet.dart';
@@ -77,6 +78,8 @@ class Player {
   void shrink(remove) {
     _width -= remove / 3;
     _height = _width / 0.55;
+
+    if (_width <= 0) emitter.emit('dead');
   }
 
   void grow(remove) {

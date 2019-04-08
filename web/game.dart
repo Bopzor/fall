@@ -2,6 +2,9 @@ import 'dart:html';
 
 import 'const.dart';
 
+import 'emitter.dart' hide Emitter;
+
+
 import 'keyboard.dart';
 import 'planet.dart';
 import 'player.dart';
@@ -29,13 +32,19 @@ class Game {
 
   Game(this._canvas) {
     _player = Player(_level.playerVelocity);
+
+    emitter.on('updateDirection', _updateDirection);
+    emitter.on('fire', _fire);
+    emitter.on('updateScore', _updateScore);
+    emitter.on('updateScore', _updateScore);
+    emitter.on('dead', _isDead);
   }
+
 
   run() {
     window.requestAnimationFrame(_gameLoop);
 
     _addPiece();
-    _level.updateLevel();
   }
 
   void _addPiece() {
@@ -43,17 +52,16 @@ class Game {
     _lastPieceCreationTime = DateTime.now().millisecondsSinceEpoch;
 
     _level.updateSpawn();
-    _level.updateLevel();
+    _level.updatePlanetVelociy();
+    _level.updateLevel(_score);
   }
 
   void _gameLoop(final double) {
     if (_dead == true) return;
 
-    _score = _score + _level.difficulty * 10;
+    emitter.emit('updateScore', (_level.difficulty * 5) ~/ 1);
 
     _update(_getElapsed());
-
-    _isDead();
 
     _render();
 
@@ -73,20 +81,18 @@ class Game {
     return elapsed;
   }
 
-  void _isDead() {
-    if (_player.width <= 0) _dead = true;
-  }
+  void _isDead() => _dead = true;
 
   void _update(final double elapsed) {
-    if (_keyboard.isPressed(KeyCode.LEFT)) _player.updateX(-elapsed);
+    if (_keyboard.isPressed(KeyCode.LEFT)) emitter.emit('updateDirection', {'direction': 'x', 'elapsed': -elapsed});
 
-    if (_keyboard.isPressed(KeyCode.RIGHT)) _player.updateX(elapsed);
+    if (_keyboard.isPressed(KeyCode.RIGHT)) emitter.emit('updateDirection', {'direction': 'x', 'elapsed': elapsed});
 
-    if (_keyboard.isPressed(KeyCode.UP)) _player.updateY(-elapsed);
+    if (_keyboard.isPressed(KeyCode.UP)) emitter.emit('updateDirection', {'direction': 'y', 'elapsed': -elapsed});
 
-    if (_keyboard.isPressed(KeyCode.DOWN)) _player.updateY(elapsed);
+    if (_keyboard.isPressed(KeyCode.DOWN)) emitter.emit('updateDirection', {'direction': 'y', 'elapsed': elapsed});
 
-    if (_keyboard.isPressed(KeyCode.SPACE)) _fire();
+    if (_keyboard.isPressed(KeyCode.SPACE)) emitter.emit('fire');
 
     if ((DateTime.now().millisecondsSinceEpoch - _lastPieceCreationTime) > randomMinMax(_level.minSpawn, _level.maxSpawn)) {
       _addPiece();
@@ -98,17 +104,16 @@ class Game {
         b.update(elapsed);
 
          if (b.isHit(p)) {
-           p.hit();
-          _score = _score - (2 * _level.difficulty) * 10;
-          }
+          p.hit();
+
+          emitter.emit('updateScore', (2 * _level.difficulty) * 10);
+        }
       });
 
       if (_player.isHit(p)) {
         _player.shrink(_level.difficulty);
 
-        _score = _score - (2 * _level.difficulty) * 10;
-
-        if (_score < 0) _score = 0;
+        emitter.emit('updateScore', - (2 * _level.difficulty) * 10);
       }
 
       p.update(elapsed);
@@ -117,6 +122,17 @@ class Game {
 
     planet.removeWhere((p) => !p.display);
     _bullets.removeWhere((b) => !b.display);
+  }
+
+  void _updateDirection(data) {
+    if (data['direction'] == 'x') _player.updateX(data['elapsed']);
+    else if (data['direction'] == 'y') _player.updateY(data['elapsed']);
+  }
+
+  void _updateScore(points) {
+    _score += points;
+
+    if (_score < 0) _score = 0;
   }
 
   void _fire() {

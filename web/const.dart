@@ -11,9 +11,10 @@ const double dc = 0.9;
 const double dd = 1.1;
 
 const double la = 2.0;
-const double lb = 6.0;
-const double lc = 12.0;
-const double ld = 30.0;
+const double lb = 8.0;
+const double lc = 15.0;
+const double ld = 40.0;
+const double gk = (dc - db) / (lc - lb);
 
 String getRandomImage() {
   List<String> src = [
